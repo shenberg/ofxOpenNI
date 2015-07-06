@@ -1040,7 +1040,13 @@ void ofxOpenNI::allocateIRBuffers(){
         imagePixels[1].allocate(width, height, OF_IMAGE_GRAYSCALE);
         currentImagePixels = &imagePixels[0];
         backImagePixels = &imagePixels[1];
-        if(bUseTexture) imageTexture.allocate(width, height, GL_LUMINANCE);
+        // TODO: different code paths for OpenGL3+ and openGL < 3. Right now dealing with >=3 only
+        // GL_LUMINANCE was removed in OpenGL 3
+        //if(bUseTexture) imageTexture.allocate(width, height, GL_LUMINANCE);
+        if(bUseTexture) {
+            imageTexture.allocate(width, height, GL_R8);
+            imageTexture.setRGToRGBASwizzles(true);
+        }
     }
 }
 
@@ -1273,7 +1279,7 @@ void ofxOpenNI::updateGenerators(){
     if(g_bIsGestureOn && (g_Gesture.IsNewDataAvailable() || g_bIsPlayerOn)){
         g_Gesture.WaitAndUpdateData();
     }
-    if(bIsThreaded && !bUseSafeThreading) mutex.lock(); // with this her I get ~400-500+ fps with 2 Kinects!
+    if(bIsThreaded && !bUseSafeThreading && !bUseBackBuffer) mutex.lock(); // with this her I get ~400-500+ fps with 2 Kinects!
     
 	if(g_bIsDepthOn){
         g_Depth.GetMetaData(g_DepthMD);
@@ -1287,6 +1293,9 @@ void ofxOpenNI::updateGenerators(){
         g_Infra.GetMetaData(g_InfraMD);
         updateIRPixels();
     }
+
+    // we only need to lock on updating high-level modules and swapping backbuffers if we really want to
+    if(bIsThreaded && !bUseSafeThreading && bUseBackBuffer) mutex.lock();
 
     if(g_bIsUserOn) updateUserTracker();
     if(g_bIsHandsOn) updateHandTracker();

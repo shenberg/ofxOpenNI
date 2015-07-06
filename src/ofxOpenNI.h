@@ -135,7 +135,7 @@ public:
 
     void setPaused(bool b); // not true pause, just stops updating context for live, recording and playback streams
 
-	void setUseTexture(bool useTexture);
+    void setUseTexture(bool useTexture) {}; //TODO: hack by shenberg
 	void setDepthColoring(DepthColoring coloring);
 
     // background subtraction
