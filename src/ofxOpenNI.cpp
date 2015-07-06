@@ -74,7 +74,7 @@ ofxOpenNI::ofxOpenNI(){
 
     bUseBackBuffer = false;
 	bUseTexture = true;
-    bUseSafeThreading = false;
+    bUseSafeThreading = true;
 	bNewPixels = false;
 	bNewFrame = false;
     
@@ -1402,7 +1402,8 @@ void ofxOpenNI::updateDepthPixels(){
 void ofxOpenNI::updateImagePixels(){
     ofxOpenNIScopedLock scopedLock(bIsThreaded, mutex);
 	const XnUInt8* pImage = g_ImageMD.Data();
-	backImagePixels->setFromPixels(pImage, g_ImageMD.XRes(), g_ImageMD.YRes(), OF_IMAGE_COLOR);
+    if (pImage != NULL)
+        backImagePixels->setFromPixels(pImage, g_ImageMD.XRes(), g_ImageMD.YRes(), OF_IMAGE_COLOR);
 }
 
 //--------------------------------------------------------------

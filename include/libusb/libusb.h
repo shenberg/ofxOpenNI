@@ -30,6 +30,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
+// TODO: "backported" hack for libusb ps3eye to work
+#define LIBUSB_CALL
+    
 
 /** \def libusb_cpu_to_le16
  * \ingroup misc
